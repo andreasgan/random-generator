@@ -1,0 +1,138 @@
+<html>
+<head>
+    <title>Random number generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+</head>
+
+<body>
+    <style>
+    @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700');
+    body {
+        font-family: 'Roboto';
+        font-weight: bolder;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #fa3f36;
+        color: #f7ccd5;
+        font-size: 8rem;
+    }
+    .centered-div {
+        
+        width:50%;
+        text-align:center;
+    }
+    .theNumber {
+        
+    }
+    .animated-gradient-bg {
+        
+    }
+
+    #app {
+        display: flex;
+        flex-direction: column;
+    }
+    .slide-fade-enter-active {
+        /*transition: all 100ms ease;*/
+    }
+    .slide-fade-leave-active {
+        /*transition: all 100ms ease;*/
+    }
+    .slide-fade-enter, .slide-fade-leave-to
+        /* .slide-fade-leave-active for <2.1.8 */ {
+        /*transform: translateY(20px);
+        opacity: 0;*/
+    }
+    </style>
+    <div id="app">
+        <div style="display: flex; 
+        align-items: center;
+        justify-content: center;
+        height: 100%;" :class="{'animated-gradient-bg': running}">
+            <!--<input type="text" v-model="min"/>
+            <input type="text" v-model="max"/>-->
+            
+            <div class="centered-div">
+            <transition name="slide-fade" mode="out-in">
+                    <div
+                    :key="visibleNumber"
+                    class="theNumber">
+                        {{visibleNumber}}
+                    </div>
+            </transition>
+        </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+            iteration: 0,
+            min: 1,
+            max: 16,
+            visibleNumber: null,
+
+            numbers: [],
+            remainingNumbers: [],
+            running: false,
+        },
+        methods: {
+            run() {
+                //this.numbers = this.remainingNumbers.splice();
+                this.running = true;
+                if(this.remainingNumbers.length === 0) {
+                    this.repopulate();
+                }
+                this.shuffle(this.remainingNumbers)
+                this.iteration = 0;
+                this.loop();
+            },
+            loop() {
+                
+                console.log(this.running);
+                setTimeout(() => {
+                    console.log(this.iteration);
+                    console.log(this.remainingNumbers);
+                    this.visibleNumber = this.remainingNumbers[this.iteration];
+                    this.iteration++;
+                    if(this.remainingNumbers.length === 0) {
+                        // done
+                        return;
+                    }
+                    else if(this.iteration < this.remainingNumbers.length) {
+                        this.loop();
+                    }else if (this.iteration === this.remainingNumbers.length) {
+                        this.remainingNumbers.pop();
+                        this.running = false;
+                    }
+                }, 150);
+            },
+            repopulate() { 
+                for (var i = this.min; i <= this.max; i++){
+                    this.remainingNumbers.push(i);
+                }
+            },
+            shuffle(a) {
+                for (let i = a.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [a[i], a[j]] = [a[j], a[i]];
+                }
+                return a;
+            }
+        },
+        mounted() {
+            this.repopulate();
+            window.addEventListener('keyup', (event) => {
+                console.log(event);
+                // If down arrow was pressed...
+                if (event.keyCode === 13) { 
+                    this.run();
+                }
+            });
+        }
+    })
+</script>
+</html>
